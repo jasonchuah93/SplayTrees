@@ -15,11 +15,15 @@ void addSplayTrees(Node **rootPtr,Node *addNode){
     *rootPtr = addNode;
     return;
   }
-  if(root->data > addNode->data){
+  if(addNode->data < root->data){
     addSplayTrees(&root->left,addNode);
+  }else if(addNode->data >= root->data){
+    addSplayTrees(&root->right,addNode);
   }
   if(addNode->data < root->data ){
     rightRotate(rootPtr);
+  }else if(addNode->data > root->data){
+    leftRotate(rootPtr);
   }
 }
 
