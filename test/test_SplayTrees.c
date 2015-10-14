@@ -410,3 +410,43 @@ void test_findSplayTrees_find_value_15_in_the_tree_and_become_root(void){
   TEST_ASSERT_EQUAL_NODE(&node7,NULL,&node10);
   TEST_ASSERT_EQUAL_NODE(&node10,&node20,&node15);
 }
+
+/*****************************************
+
+	delSplayTrees
+
+*******************************************/
+/**
+*  root		             root
+*	 |     delete 10	  |
+*	 v    ---------->     v
+*	NULL                 NULL <------ Element 10 not found 
+**/
+void test_delplayTrees_delete_value_10_in_empty_tree_should_throw_error(void){
+  Node node10 = {.left=NULL, .right=NULL, .data = 10};
+  Node *root = NULL;
+  ErrorNode e;
+  Try{
+      delSplayTrees(&root,&node10);
+      TEST_FAIL_MESSAGE("Element not found")
+  }
+  Catch(e){
+      TEST_ASSERT_EQUAL(ERROR_NODE_NOT_FOUND,e);
+  }
+}
+
+/**
+*  root		             root
+*	 |     delete 100	  |
+*	 v    ----------->    v
+*	100                  NULL 
+**/
+void test_delSplayTrees_delete_value_100_in_tree_and_tree_become_NULL(void){
+  Node node100 = {.left=NULL, .right=NULL, .data = 100};
+  Node *root = &node100;
+  
+  delSplayTrees(&root,&node100);
+  
+  TEST_ASSERT_EQUAL_PTR(NULL,root);
+}
+

@@ -17,16 +17,14 @@ void addSplayTrees(Node **rootPtr,Node *addNode){
   if(root==NULL){
     *rootPtr = addNode;
     return;
-  }
-  if(addNode->data < root->data){
-    addSplayTrees(&root->left,addNode);
-  }else if(addNode->data >= root->data){
-    addSplayTrees(&root->right,addNode);
-  }
-  if(addNode->data < root->data ){
-    rightRotate(rootPtr);
-  }else if(addNode->data >= root->data){
-    leftRotate(rootPtr);
+  }else{
+      if(addNode->data < root->data){
+        addSplayTrees(&root->left,addNode);
+        rightRotate(rootPtr);
+      }else if(addNode->data >= root->data){
+        addSplayTrees(&root->right,addNode);
+        leftRotate(rootPtr);
+      }
   }
 }
 
@@ -38,7 +36,13 @@ void addSplayTrees(Node **rootPtr,Node *addNode){
 */
 
 Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
-  
+  Node *root = *rootPtr;
+  if(root==NULL){
+      Throw(ERROR_NODE_NOT_FOUND);
+  }else{
+      *rootPtr = NULL;
+  }
+   
 }
 
 /*
@@ -52,15 +56,16 @@ Node *findSplayTrees(Node **rootPtr, Node*targetNode){
    Node *root = *rootPtr;
    if(root==NULL){
        Throw(ERROR_NODE_NOT_FOUND);
-   }
-   if(targetNode->data == root->data){
-       *rootPtr = targetNode;
-   }else if(targetNode->data >= root->data){
-       findSplayTrees(&root->right,targetNode);
-       leftRotate(rootPtr);
-   }else if(targetNode->data < root->data){
-       findSplayTrees(&root->left,targetNode);
-       rightRotate(rootPtr);
+   }else{
+       if(targetNode->data == root->data){
+           *rootPtr = targetNode;
+       }else if(targetNode->data >= root->data){
+           findSplayTrees(&root->right,targetNode);
+           leftRotate(rootPtr);
+       }else if(targetNode->data < root->data){
+           findSplayTrees(&root->left,targetNode);
+           rightRotate(rootPtr);
+       }
    }
    return targetNode;    
 }
