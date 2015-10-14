@@ -28,7 +28,7 @@ void addSplayTrees(Node **rootPtr,Node *addNode){
 }
 
 /*
-  Function   : delete a existed element in the root 
+  Function   : delete an existed element in the root 
   Parameter  :  1) rootPtr : refer to the root of the tree 
                 2) deleteNode : refer to the node that is delete from the tree
   Return    : deleted node               
@@ -38,3 +38,13 @@ Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
   
 }
 
+/*
+  Function   : find an existed element in the root 
+  Parameter  :  1) rootPtr : refer to the root of the tree 
+                2) targetNode : refer to the node that is find from the tree
+  Return    : found node               
+*/
+
+Node *findSplayTrees(Node **rootPtr, Node*targetNode){
+    
+}
