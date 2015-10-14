@@ -4,15 +4,15 @@
 #include "Node.h"
 #include "Rotation.h"
 #include "CustomAssertions.h"
+#include "Error.h"
 #include "CException.h"
 
 void setUp(void){}
-
 void tearDown(void){}
 
 /*****************************************
 
-	1 NODE tests
+	addSplayTrees
 
 *******************************************/
 /**
@@ -31,11 +31,6 @@ void test_addSplayTrees_add_value_10_into_the_tree(void){
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,root);
 }
 
-/*****************************************
-
-	2 NODE tests
-
-*******************************************/
 /**
 *  root		        root                        root
 *	 |     add 7	 |     rotate                |
@@ -78,11 +73,6 @@ void test_addSplayTrees_add_value_15_into_the_tree_with_root_10_and_should_rotat
   TEST_ASSERT_EQUAL_NODE(&node10,NULL,root);
 }
 
-/*****************************************
-
-	3 NODE tests
-
-*******************************************/
 /**
 *     root               root                      root                      root
 *	   |                   |                         |                        |
@@ -108,11 +98,6 @@ void test_addSplayTrees_add_value_20_into_the_tree_with_root_7_and_should_rotate
   TEST_ASSERT_EQUAL_NODE(&node7,NULL,root);
 }
 
-/*****************************************
-
-	4 NODE tests
-
-*******************************************/
 /**
 *     root               root                      root                     root                      root
 *	   |                   |                         |                       |                          |
@@ -225,6 +210,117 @@ void test_addSplayTrees_add_value_1_into_the_tree_with_root_20_and_should_rotate
   TEST_ASSERT_EQUAL_NODE(NULL,&node20,&node1);
 }
 
+/*****************************************
+
+	findSplayTrees
+
+*******************************************/
+/**
+*  root		             root
+*	 |     locate 10	  |
+*	 v    ---------->     v
+*	NULL                 NULL <------ Element 10 not found 
+**/
+
+void test_findplayTrees_find_value_10_in_empty_tree_should_throw_error(void){
+  Node node10 = {.left=NULL, .right=NULL, .data = 10};
+  Node *root = NULL;
+  ErrorNode e;
+  Try{
+      findSplayTrees(&root,&node10);
+      TEST_FAIL_MESSAGE("Element not found")
+  }
+  Catch(e){
+      TEST_ASSERT_EQUAL(ERROR_NODE_NOT_FOUND,e);
+  }
+}
+
+/**
+*  root		             root
+*	 |     locate 10	  |
+*	 v    ---------->     v
+*	 10                   10 <------ Element 10 found 
+**/
+void test_findSplayTrees_find_value_10_in_tree_should_find_10_and_become_root(void){
+  Node node10 = {.left=NULL, .right=NULL, .data = 10};
+  Node *root = &node10;
+  Node *targetNode;
+  
+  targetNode = findSplayTrees(&root,&node10);
+  
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
+}
+
+/**
+*  root		             root
+*	 |     locate 10	  |
+*	 v    ---------->     v
+*	 10                   10 <------ Element 10 found 
+*      \                   \
+*      30                  30
+**/
+void test_findSplayTrees_find_value_10_in_tree_with_child_and_become_root(void){
+  Node node30 = {.left=NULL, .right=NULL, .data = 30};
+  Node node10 = {.left=NULL, .right=&node30, .data = 10};
+  Node *root = &node10;
+  Node *targetNode;
+  
+  targetNode = findSplayTrees(&root,&node10);
+  
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
+}
+
+/**
+*  root		             root                          root       
+*	 |     locate 30	  |                              |
+*	 v    ---------->     v                              v
+*	 10                   10                             30
+*      \                   \                            / 
+*      30                  30 <-- Element 30 found     10
+*                                 and rotate left
+**/
+void test_findSplayTrees_find_value_30_in_tree_and_become_root(void){
+  Node node30 = {.left=NULL, .right=NULL, .data = 30};
+  Node node10 = {.left=NULL, .right=&node30, .data = 10};
+  Node *root = &node10;
+  Node *targetNode;
+  
+  targetNode = findSplayTrees(&root,&node30);
+  
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node10);
+  TEST_ASSERT_EQUAL_NODE(&node10,NULL,&node30);
+}
+
+/**
+*  root		                          root             root       
+*	 |     locate 5	                   |                 |
+*	 v    ---------->                  v                 v
+*	 10                               10     ------->    5            
+*   /  \                             /  \                 \
+*  5    30      Element 5 found --> 5    30                10
+*               and rotate right                            \
+*                                                            30
+**/
+void test_findSplayTrees_find_value_5_in_tree_and_become_root(void){
+  Node node5 = {.left=NULL, .right=NULL, .data = 5};
+  Node node30 = {.left=NULL, .right=NULL, .data = 30};
+  Node node10 = {.left=&node5, .right=&node30, .data = 10};
+  Node *root = &node10;
+  Node *targetNode;
+  
+  targetNode = findSplayTrees(&root,&node5);
+  
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node30);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node30,&node10);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node5);
+}
+
 /**
 *     root                root                   root                    root                              
 *	   |                    |                      |                       |                         
@@ -237,18 +333,80 @@ void test_addSplayTrees_add_value_1_into_the_tree_with_root_20_and_should_rotate
 *        \                   \                                         
 *        15                   15                                       
 **/
-void test_findSplayTrees_find_value_10_in_the_tree(void){
+void test_findSplayTrees_find_value_10_in_the_tree_and_become_root(void){
   Node node15 = {.left=NULL, .right=NULL, .data = 15};
   Node node10 = {.left=NULL, .right=&node15, .data = 10};
   Node node7 = {.left=NULL, .right=&node10, .data = 7};
   Node node20 = {.left=&node7, .right=NULL, .data = 20};
   Node *root = &node20;
+  Node *targetNode;
   
-  findSplayTrees(&root,&node10);
+  targetNode = findSplayTrees(&root,&node10);
   
-  TEST_ASSERT_EQUAL_PTR(&node10,root);
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node15);
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node7);
   TEST_ASSERT_EQUAL_NODE(&node15,NULL,&node20);
   TEST_ASSERT_EQUAL_NODE(&node7,&node20,&node10);
+}
+
+/**
+*    root                                     root             root
+*     |                                        |                 |
+*     v                                        v                 v
+*     10                    Element 7 found    10                7
+*    /  \  locate 7         and rotate right  /  \                \
+*   7   20 -------->        ---------------> 7   20 ------>        10   
+*       /                                        /                   \
+*      15                                       15                   20            
+*                                                                    /
+*                                                                   15
+**/
+void test_findSplayTrees_find_value_7_in_the_tree_and_become_root(void){
+  Node node15 = {.left=NULL, .right=NULL, .data = 15};
+  Node node7 = {.left=NULL, .right=NULL, .data = 7};
+  Node node20 = {.left=&node15, .right=NULL, .data = 20};
+  Node node10 = {.left=&node7, .right=&node20, .data = 10};
+  Node *root = &node10;
+  Node *targetNode;
+  
+  targetNode = findSplayTrees(&root,&node7);
+  
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node15);
+  TEST_ASSERT_EQUAL_NODE(&node15,NULL,&node20);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node20,&node10);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node7);
+}
+
+/**
+*    root                  root                           root                       root
+*     |                     |                               |                         |
+*     v                     v                               v                         v
+*     10                   10                               10                        15
+*    /  \  locate 15      /  \    Element 15 found         /  \     Rotate left      /  \  
+*   7   20 --------->    7   20   and rotate right        7   15    at 10           10  20
+*       /                   /    ------------------>            \   ------------>  /       
+*      15                  15                                   20                7
+*                                                                    
+*                                                                   
+**/
+void test_findSplayTrees_find_value_15_in_the_tree_and_become_root(void){
+  Node node15 = {.left=NULL, .right=NULL, .data = 15};
+  Node node7 = {.left=NULL, .right=NULL, .data = 7};
+  Node node20 = {.left=&node15, .right=NULL, .data = 20};
+  Node node10 = {.left=&node7, .right=&node20, .data = 10};
+  Node *root = &node10;
+  Node *targetNode;
+  
+  targetNode = findSplayTrees(&root,&node15);
+  
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node7);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node20);
+  TEST_ASSERT_EQUAL_NODE(&node7,NULL,&node10);
+  TEST_ASSERT_EQUAL_NODE(&node10,&node20,&node15);
 }

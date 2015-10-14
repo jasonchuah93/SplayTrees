@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <string.h>
 #include "SplayTrees.h"
 #include "Rotation.h"
+#include "Error.h"
+#include "CException.h"
 
 
 /*
@@ -11,7 +14,7 @@
 */
 void addSplayTrees(Node **rootPtr,Node *addNode){
   Node *root = *rootPtr;
-  if(root ==NULL){
+  if(root==NULL){
     *rootPtr = addNode;
     return;
   }
@@ -22,7 +25,7 @@ void addSplayTrees(Node **rootPtr,Node *addNode){
   }
   if(addNode->data < root->data ){
     rightRotate(rootPtr);
-  }else if(addNode->data > root->data){
+  }else if(addNode->data >= root->data){
     leftRotate(rootPtr);
   }
 }
@@ -46,5 +49,18 @@ Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
 */
 
 Node *findSplayTrees(Node **rootPtr, Node*targetNode){
-    
+   Node *root = *rootPtr;
+   if(root==NULL){
+       Throw(ERROR_NODE_NOT_FOUND);
+   }
+   if(targetNode->data == root->data){
+       *rootPtr = targetNode;
+   }else if(targetNode->data >= root->data){
+       findSplayTrees(&root->right,targetNode);
+       leftRotate(rootPtr);
+   }else if(targetNode->data < root->data){
+       findSplayTrees(&root->left,targetNode);
+       rightRotate(rootPtr);
+   }
+   return targetNode;    
 }
