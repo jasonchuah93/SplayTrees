@@ -6,6 +6,5 @@
 #include "CException.h"
 
 void setUp(void){}
-
 void tearDown(void){}
 
