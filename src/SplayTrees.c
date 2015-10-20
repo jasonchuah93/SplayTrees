@@ -48,6 +48,7 @@ Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
                 *rootPtr = root->right;
             }
         }else if(deleteNode->data < root->data){
+            
             rightRotate(rootPtr);
             node = delSplayTrees(rootPtr,deleteNode);
         }else if(deleteNode->data >= root->data){

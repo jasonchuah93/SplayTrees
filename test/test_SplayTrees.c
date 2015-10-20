@@ -571,14 +571,14 @@ void test_delSplayTrees_delete_value_500_in_tree_and_value_100_become_root(void)
 }
 
 /**
-*   root		             root            root             root
-*	  |     delete 25	       |              |                |
-*	  v    ----------->        v              v                v
-*	 100                      100    ----->   25     ----->    50
-*    / \                      / \              \                \
-*   50  500                 25  500             50              100
-*  /                          \                  \                \
-* 25                          50                 100              500
+*   root		             root            root                root
+*	  |     delete 25	       |              |      25            |
+*	  v    ----------->        v              v      deleted       v
+*	 100                      100    ----->   25     -------->     50
+*    / \                      / \              \                    \
+*   50  500                 25  500             50                  100
+*  /                          \                  \                    \
+* 25                          50                 100                  500
 *                                                  \
 *                                                  500
 **/
@@ -594,5 +594,68 @@ void test_delSplayTrees_delete_value_25_in_tree_and_value_50_become_root(void){
   TEST_ASSERT_EQUAL_PTR(&node50,root);
   TEST_ASSERT_EQUAL_NODE(NULL,&node100,&node50);
   TEST_ASSERT_EQUAL_NODE(NULL,&node500,&node100);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node500);
 }
+
+/**
+*   root		             root            root                      root                            root            
+*	  |     delete 700	       |              |                          |                               |
+*	  v    ----------->        v              v      700 deleted         v    Choose left child          v 
+*	 100                      100    ----->  700     ----------->             largest value             500
+*    / \                      / \            /                         /      to become root            /
+*   50  500                 50  700        100                       100    --------------------->    100
+*  /     \                  /   /          / \                       /  \                             /
+* 25     700               25  500        50 500                    50  500                          50
+*                                        /                         /                                /
+*                                      25                         25                               25
+**/
+void test_delSplayTrees_delete_value_700_in_tree_and_value_500_become_root(void){
+  Node node25 = {.left=NULL, .right=NULL, .data = 25};
+  Node node700 = {.left=NULL, .right=NULL, .data = 700};
+  Node node50 = {.left=&node25, .right=NULL, .data = 50};
+  Node node500 = {.left=NULL, .right=&node700, .data = 500};
+  Node node100 = {.left=&node50, .right=&node500, .data = 100};
+  Node *root = &node100;
+  
+  delSplayTrees(&root,&node700);
+  
+  TEST_ASSERT_EQUAL_PTR(&node500,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node25);
+  TEST_ASSERT_EQUAL_NODE(&node25,NULL,&node50);
+  TEST_ASSERT_EQUAL_NODE(&node50,NULL,&node100);
+  TEST_ASSERT_EQUAL_NODE(&node100,NULL,&node500);
+}
+
+/**
+*   root		             root            root                      root                              root            
+*	  |     delete 70	       |              |                          |                                 |
+*	  v    ----------->        v              v      70 deleted         v       Choose left child          v 
+*	 100                      100    ----->  70     ----------->                largest value             50
+*    / \                      / \            / \                       / \      to become root           /  \
+*   50  500                 70  500        50  100                    50 100    --------------------->  25  100
+*  / \    \                 /     \        /      \                  /     \                                  \
+* 25 70    700             50     700     25      500               25     500                                500
+*                         /                         \                        \                                  \
+*                        25                         700                      700                                700
+**/
+void test_delSplayTrees_delete_value_70_in_tree_and_value_50_become_root(void){
+  Node node25 = {.left=NULL, .right=NULL, .data = 25};
+  Node node70 = {.left=NULL, .right=NULL, .data = 70};
+  Node node700 = {.left=NULL, .right=NULL, .data = 700};
+  Node node50 = {.left=&node25, .right=&node70, .data = 50};
+  Node node500 = {.left=NULL, .right=&node700, .data = 500};
+  Node node100 = {.left=&node50, .right=&node500, .data = 100};
+  Node *root = &node100;
+  
+  //delSplayTrees(&root,&node70);
+  
+  //TEST_ASSERT_EQUAL_PTR(&node50,root);
+  //TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node25);
+  //TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node700);
+  //TEST_ASSERT_EQUAL_NODE(NULL,&node700,&node500);
+  //TEST_ASSERT_EQUAL_NODE(NULL,&node500,&node100);
+  //TEST_ASSERT_EQUAL_NODE(&node25,&node100,&node50);
+}
+
+
 
