@@ -5,7 +5,6 @@
 #include "Error.h"
 #include "CException.h"
 
-
 /*
   Function   : add a new element into the root 
   Parameter  :  1) rootPtr : refer to the root of the tree 
@@ -36,7 +35,7 @@ void addSplayTrees(Node **rootPtr,Node *addNode){
 */
 
 Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
-    Node* node; Node *root = *rootPtr;
+    Node* node, *root = *rootPtr;
     if(root==NULL){
         Throw(ERROR_NODE_NOT_FOUND);
     }else{ 
@@ -44,15 +43,21 @@ Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
             *rootPtr = NULL;
             if(root->left){
                 *rootPtr = root->left;
-            }else if(root->right){
+                (*rootPtr)->right = root->right;
+            }else 
                 *rootPtr = root->right;
+        }else{
+            if(deleteNode->data < root->data){
+                if(root->left->right){
+                    leftRightRotate(rootPtr);
+                }
+                rightRotate(rootPtr);
+            }else if(deleteNode->data >= root->data){
+                if(root->right->left){
+                    rightLeftRotate(rootPtr);
+                }
+                leftRotate(rootPtr);
             }
-        }else if(deleteNode->data < root->data){
-            
-            rightRotate(rootPtr);
-            node = delSplayTrees(rootPtr,deleteNode);
-        }else if(deleteNode->data >= root->data){
-            leftRotate(rootPtr);
             node = delSplayTrees(rootPtr,deleteNode);
         }
     }

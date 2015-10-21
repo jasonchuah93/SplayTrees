@@ -5,5 +5,7 @@
 
 void leftRotate(Node **nodePtr);
 void rightRotate(Node **nodePtr);
+void leftRightRotate(Node **nodePtr);
+void rightLeftRotate(Node **nodePtr);
 
 #endif // Rotation_H

@@ -23,5 +23,15 @@ void leftRotate(Node **nodePtr){
     *nodePtr = currentRoot;
 }
 
+void leftRightRotate(Node **nodePtr){
+    Node *currentRoot = *nodePtr;
+	leftRotate(&currentRoot->left);
+	rightRotate(&(*nodePtr));
+}
 
+void rightLeftRotate(Node **nodePtr){
+	Node *currentRoot = *nodePtr;
+	rightRotate(&currentRoot->right);
+	leftRotate(&(*nodePtr));
+}
 
