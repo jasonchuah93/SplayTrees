@@ -691,5 +691,70 @@ void test_delSplayTrees_delete_value_250_in_tree_and_value_100_become_root(void)
   
 }
 
+/**
+*   root		             root                      root                      root                                         
+*	  |     delete 50	       |                        |                          |                                 
+*	  v    ----------->        v      50 deleted        v      Choose left child   v                                     
+*	 100                       50    ------------>             largest value       25               
+*    /  \                     /  \                     /  \    to become root       \              
+*   50   500                 25  100                 25   100  ----------------->   100                  
+*  / \   / \                     / \                     /  \                       /  \                       
+* 25 70 250 700                 70 500                  70  500                   70   500                      
+*                                  /  \                    /  \                        / \                                          
+*                                250  700                 250 700                    250 700                                        
+**/
+void test_delSplayTrees_delete_value_50_in_tree_and_value_25_become_root(void){
+  Node node25 = {.left=NULL, .right=NULL, .data = 25};
+  Node node70 = {.left=NULL, .right=NULL, .data = 70};
+  Node node250 = {.left=NULL, .right=NULL, .data = 250};
+  Node node700 = {.left=NULL, .right=NULL, .data = 700};
+  Node node50 = {.left=&node25, .right=&node70, .data = 50};
+  Node node500 = {.left=&node250, .right=&node700, .data = 500};
+  Node node100 = {.left=&node50, .right=&node500, .data = 100};
+  Node *root = &node100;
+  
+  delSplayTrees(&root,&node50);
+  
+  TEST_ASSERT_EQUAL_PTR(&node25,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node70);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node250);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node700);
+  TEST_ASSERT_EQUAL_NODE(&node250,&node700,&node500);
+  TEST_ASSERT_EQUAL_NODE(&node70,&node500,&node100);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node100,&node25);
+}
 
-
+/**
+*   root		             root                      root                           root               root                                
+*	  |     delete 500	       |                        |                              |                   |              
+*	  v    ----------->        v      500 deleted       v      Choose left child       v                   v                  
+*	 100                      500    ------------>             largest value                              250
+*    /  \                     /  \                    /  \    to become root          / \                 / \
+*   50   500                100  700                100  700  ----------------->   250  700  -------->  100 700         
+*  / \   / \                / \                    /  \                            /                    /   
+* 25 70 250 700            50 250                 50  250                        100                   50      
+*                         / \                    /  \                            /                    / \                       
+*                       25  70                  25  70                          50                   25 70                   
+*                                                                              / \                  
+*                                                                            25  70      
+**/
+void test_delSplayTrees_delete_value_500_in_tree_and_value_250_become_root(void){
+  Node node25 = {.left=NULL, .right=NULL, .data = 25};
+  Node node70 = {.left=NULL, .right=NULL, .data = 70};
+  Node node250 = {.left=NULL, .right=NULL, .data = 250};
+  Node node700 = {.left=NULL, .right=NULL, .data = 700};
+  Node node50 = {.left=&node25, .right=&node70, .data = 50};
+  Node node500 = {.left=&node250, .right=&node700, .data = 500};
+  Node node100 = {.left=&node50, .right=&node500, .data = 100};
+  Node *root = &node100;
+  
+  delSplayTrees(&root,&node500);
+  
+  TEST_ASSERT_EQUAL_PTR(&node250,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node25);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node70);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node700);
+  TEST_ASSERT_EQUAL_NODE(&node25,&node70,&node50);
+  TEST_ASSERT_EQUAL_NODE(&node50,NULL,&node100);
+  TEST_ASSERT_EQUAL_NODE(&node100,&node700,&node250);
+}

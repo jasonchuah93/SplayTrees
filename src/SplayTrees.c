@@ -33,7 +33,6 @@ void addSplayTrees(Node **rootPtr,Node *addNode){
                 2) deleteNode : refer to the node that is delete from the tree
   Return    : deleted node               
 */
-
 Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
     Node* node, *root = *rootPtr;
     if(root==NULL){
@@ -42,18 +41,23 @@ Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
         if(root == deleteNode){
             *rootPtr = NULL;
             if(root->left){
-                *rootPtr = root->left;
+                if(root->left->right){
+                    *rootPtr = root->left->right;
+                    root->left->right = NULL;
+                    (*rootPtr)->left = root->left;
+                }else
+                    *rootPtr = root->left;
                 (*rootPtr)->right = root->right;
             }else 
                 *rootPtr = root->right;
         }else{
             if(deleteNode->data < root->data){
-                if(root->left->right){
+                if(root->left->right == deleteNode ){
                     leftRightRotate(rootPtr);
                 }
                 rightRotate(rootPtr);
             }else if(deleteNode->data >= root->data){
-                if(root->right->left){
+                if(root->right->left == deleteNode){
                     rightLeftRotate(rootPtr);
                 }
                 leftRotate(rootPtr);
@@ -70,7 +74,6 @@ Node *delSplayTrees(Node **rootPtr,Node *deleteNode){
                 2) targetNode : refer to the node that is find from the tree
   Return    : found node               
 */
-
 Node *findSplayTrees(Node **rootPtr, Node*targetNode){
    Node *root = *rootPtr;
    if(root==NULL){
