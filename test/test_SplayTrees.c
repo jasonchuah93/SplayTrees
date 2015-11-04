@@ -16,18 +16,18 @@ void tearDown(void){}
 
 *******************************************/
 /**
-* root		         root
+*   root		      root
 *	 |     add 10	  |
 *	 v    ------>     v
 *	NULL              10
 **/
-
 void test_addSplayTrees_add_value_10_into_the_tree(void){
   Node node10 = {.left=NULL, .right=NULL, .data = 10};
   Node *root = NULL;
   
   addSplayTrees(&root,&node10);
   
+  TEST_ASSERT_EQUAL_PTR(&node10,root);
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,root);
 }
 
@@ -39,7 +39,6 @@ void test_addSplayTrees_add_value_10_into_the_tree(void){
 *                  /                              \
 *                 7                                10
 **/
-
 void test_addSplayTrees_add_value_7_into_the_tree_with_root_10_and_should_rotate_right(void){
   Node node7 = {.left=NULL, .right=NULL, .data = 7};
   Node node10 = {.left=NULL, .right=NULL, .data = 10};
@@ -49,18 +48,17 @@ void test_addSplayTrees_add_value_7_into_the_tree_with_root_10_and_should_rotate
   
   TEST_ASSERT_EQUAL_PTR(&node7,root);
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node10);
-  TEST_ASSERT_EQUAL_NODE(NULL,&node10,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node7);
 }
 
 /**
 *  root		         root                        root
 *	 |     add 15	  |         rotate            |
 *	 v    ------->    v        left at 10         v
-*	10                10    --------------->      15
-*                      \                          /
+*	10                10    --------------->     15
+*                      \                         /
 *                      15                       10
 **/
-
 void test_addSplayTrees_add_value_15_into_the_tree_with_root_10_and_should_rotate_left(void){
   Node node10 = {.left=NULL, .right=NULL, .data = 10};
   Node node15 = {.left=NULL, .right=NULL, .data = 15};
@@ -70,7 +68,60 @@ void test_addSplayTrees_add_value_15_into_the_tree_with_root_10_and_should_rotat
   
   TEST_ASSERT_EQUAL_PTR(&node15,root);
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node10);
-  TEST_ASSERT_EQUAL_NODE(&node10,NULL,root);
+  TEST_ASSERT_EQUAL_NODE(&node10,NULL,&node15);
+}
+
+/**
+*  root		         root                        root
+*	 |     add 5	  |         rotate            |
+*	 v    ------->    v        right at 10        v
+*	10                10    --------------->      5
+*     \              /  \                          \
+*     15            5   15                         10
+*                                                    \
+*                                                    15
+**/
+void test_addSplayTrees_add_value_5_into_the_tree_with_root_10_and_should_rotate_right(void){
+  Node node5 = {.left=NULL, .right=NULL, .data = 5};
+  Node node15 = {.left=NULL, .right=NULL, .data = 15};
+  Node node10 = {.left=NULL, .right=&node15, .data = 10};
+  Node *root = &node10;
+  
+  addSplayTrees(&root,&node5);
+  
+  TEST_ASSERT_EQUAL_PTR(&node5,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node15);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node15,&node10);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node5);
+}
+
+/**
+*  root		         root                        root            root                  root
+*	 |     add 5	  |         rotate            |                |                    |
+*	 v    ------->    v        right at 10        v    add 1       v      rotate        v 
+*	10                10    --------------->      5    ----->      5     right at 5     1
+*     \              /  \                          \              / \   ----------->     \
+*     15            5   15                         10            1  10                    5
+*                                                    \                \                    \
+*                                                    15               15                    10
+*                                                                                            \       
+*                                                                                            15       
+**/
+void test_addSplayTrees_add_value_5_then_value_1_into_the_tree_with_root_10_and_value_1_become_root(void){
+  Node node1 = {.left=NULL, .right=NULL, .data = 1};
+  Node node5 = {.left=NULL, .right=NULL, .data = 5};
+  Node node15 = {.left=NULL, .right=NULL, .data = 15};
+  Node node10 = {.left=NULL, .right=&node15, .data = 10};
+  Node *root = &node10;
+  
+  addSplayTrees(&root,&node5);
+  addSplayTrees(&root,&node1);
+  
+  TEST_ASSERT_EQUAL_PTR(&node1,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node15);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node15,&node10);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node5);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node5,&node1);
 }
 
 /**
@@ -95,7 +146,7 @@ void test_addSplayTrees_add_value_20_into_the_tree_with_root_7_and_should_rotate
   TEST_ASSERT_EQUAL_PTR(&node20,root);
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node10);
   TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node7);
-  TEST_ASSERT_EQUAL_NODE(&node7,NULL,root);
+  TEST_ASSERT_EQUAL_NODE(&node7,NULL,&node20);
 }
 
 /**
@@ -210,6 +261,38 @@ void test_addSplayTrees_add_value_1_into_the_tree_with_root_20_and_should_rotate
   TEST_ASSERT_EQUAL_NODE(NULL,&node20,&node1);
 }
 
+/**
+*   root		          root                      root                         root                                       
+*	  |     add 70	       |      rotate              |      rotate               |                              
+*	  v    -------->       v      left at 50          v      right at 100         v               
+*	 100                   100    ----------->       100     ----------->         70                 
+*    / \                  /   \                     /  \                         /  \               
+*   50  500              50   500                 70   500                     50   100    
+*  /     \              /  \    \                /       \                    /       \                       
+* 25     700           25  70   700             50       700                25        500                 
+*                                              /                                        \                  
+*                                             25                                        700
+**/
+void test_addSplayTrees_add_value_70_in_tree_and_become_root(void){
+  Node node70 = {.left=NULL, .right=NULL, .data = 70};
+  Node node25 = {.left=NULL, .right=NULL, .data = 25};
+  Node node700 = {.left=NULL, .right=NULL, .data = 700};
+  Node node50 = {.left=&node25, .right=NULL, .data = 50};
+  Node node500 = {.left=NULL, .right=&node700, .data = 500};
+  Node node100 = {.left=&node50, .right=&node500, .data = 100};
+  Node *root = &node100;
+  
+  addSplayTrees(&root,&node70);
+  
+  TEST_ASSERT_EQUAL_PTR(&node70,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node25);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node700);
+  TEST_ASSERT_EQUAL_NODE(&node25,NULL,&node50);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node700,&node500);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node500,&node100);
+  TEST_ASSERT_EQUAL_NODE(&node50,&node100,&node70);
+}
+
 /*****************************************
 
 	findSplayTrees
@@ -250,6 +333,7 @@ void test_findSplayTrees_find_value_10_in_tree_should_find_10_and_become_root(vo
   
   TEST_ASSERT_NOT_NULL(targetNode);
   TEST_ASSERT_EQUAL_PTR(root,targetNode);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node10);
 }
 
 /**
@@ -270,6 +354,7 @@ void test_findSplayTrees_find_value_10_in_tree_with_child_and_become_root(void){
   
   TEST_ASSERT_NOT_NULL(targetNode);
   TEST_ASSERT_EQUAL_PTR(root,targetNode);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node30,&node10);
 }
 
 /**
@@ -409,6 +494,42 @@ void test_findSplayTrees_find_value_15_in_the_tree_and_become_root(void){
   TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node20);
   TEST_ASSERT_EQUAL_NODE(&node7,NULL,&node10);
   TEST_ASSERT_EQUAL_NODE(&node10,&node20,&node15);
+}
+
+/**
+*   root		             root                              root                           root                                               
+*	  |     locate 250	       |                                |                              |                                 
+*	  v    ----------->        v      250 found                 v                              v                                     
+*	 100                      100    and rotate right          100      rotate left           250
+*    /  \                    /   \  ----------------->        /   \     at 100               /  \            
+*   50   500                50   500                         50   250  ----------------->  100  500  
+*  / \   / \               / \   / \                        / \     \                      /      \  
+* 25 70 250 700           25 70 250 700                    25 70    500                   50      700
+*                                                                     \                  / \         
+*                                                                     700               25 70                                                                                                                                                                                          
+**/
+void test_findSplayTrees_find_value_250_in_tree_and_become_root(void){
+  Node node25 = {.left=NULL, .right=NULL, .data = 25};
+  Node node70 = {.left=NULL, .right=NULL, .data = 70};
+  Node node250 = {.left=NULL, .right=NULL, .data = 250};
+  Node node700 = {.left=NULL, .right=NULL, .data = 700};
+  Node node50 = {.left=&node25, .right=&node70, .data = 50};
+  Node node500 = {.left=&node250, .right=&node700, .data = 500};
+  Node node100 = {.left=&node50, .right=&node500, .data = 100};
+  Node *root = &node100;
+  Node *targetNode;
+  
+  targetNode = findSplayTrees(&root,&node250);
+  
+  TEST_ASSERT_NOT_NULL(targetNode);
+  TEST_ASSERT_EQUAL_PTR(root,targetNode);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node25);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node70);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node700);
+  TEST_ASSERT_EQUAL_NODE(&node25,&node70,&node50);
+  TEST_ASSERT_EQUAL_NODE(&node50,NULL,&node100);
+  TEST_ASSERT_EQUAL_NODE(NULL,&node700,&node500);
+  TEST_ASSERT_EQUAL_NODE(&node100,&node500,&node250);
 }
 
 /*****************************************
@@ -757,4 +878,95 @@ void test_delSplayTrees_delete_value_500_in_tree_and_value_250_become_root(void)
   TEST_ASSERT_EQUAL_NODE(&node25,&node70,&node50);
   TEST_ASSERT_EQUAL_NODE(&node50,NULL,&node100);
   TEST_ASSERT_EQUAL_NODE(&node100,&node700,&node250);
+}
+
+/**
+*      root                     root                         root                       root                            root                              root
+*        |                       |                             |                          |                               |                                 | 
+*        v                       v                             v                          v                               v                                 v
+*       20                      20                             10                       /   \                           /   \  8 become new root            8
+*      /     delete 10         /      rotate right            /  \    10 deleted       7    20  largest value at       8    20 ------------------>         / \
+*     7     ----------->      10      at 20                  7   20  ------------>      \   /   left root become      /     /                             7  20
+*      \                     / \     -------------->          \  /                       8 15   new root             7     15                                /
+*      10                   7  15                              8 15                            ------------------>                                          15   
+*     /  \                   \                                              
+*    8   15                   8
+**/
+void test_delSplayTrees_delete_value_10_in_tree_and_value_8_in_tree_become_root(void){
+  Node node8 = {.left=NULL, .right=NULL, .data = 8};
+  Node node15 = {.left=NULL, .right=NULL, .data = 15};
+  Node node10 = {.left=&node8, .right=&node15, .data = 10};
+  Node node7 = {.left=NULL, .right=&node10, .data = 7};
+  Node node20 = {.left=&node7, .right=NULL, .data = 20};
+  Node *root = &node20;
+  
+  delSplayTrees(&root,&node10);
+  
+  TEST_ASSERT_EQUAL_PTR(&node8,root);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node15);
+  TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node7);
+  TEST_ASSERT_EQUAL_NODE(&node15,NULL,&node20);
+}
+
+void test_all_SplayTrees_functions_in_one_test(void){
+ Node node1 = {.left=NULL, .right=NULL, .data = 1};
+ Node node5 = {.left=NULL, .right=NULL, .data = 5};
+ Node node10 = {.left=NULL, .right=NULL, .data = 10};
+ Node node20 = {.left=NULL, .right=NULL, .data = 20};
+ Node *root = NULL;
+ 
+ /**
+     root             root
+       |    add 5      |
+       v    ----->     v 
+      NULL             5 
+ **/
+ addSplayTrees(&root,&node5);
+ TEST_ASSERT_EQUAL_PTR(&node5,root);
+ TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node5);
+ /**  
+    root           root                   root
+      |   add 10     |    rotate left      |
+      v   ----->     v    at root          v
+      5              5    ----------->    10
+                      \                  /
+                      10                5
+ **/
+ addSplayTrees(&root,&node10);
+ TEST_ASSERT_EQUAL_PTR(&node10,root);
+ TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node5);
+ TEST_ASSERT_EQUAL_NODE(&node5,NULL,&node10);
+ /**
+      root           root                  root                   root
+       |   add 1      |   rotate right      |   rotate right        | 
+       v   ----->     v   at 5              v   at root             v
+       10             10  ------------>     10  ------------->      1
+      /              /                     /                         \
+     5              5                      1                         10
+                   /                        \                        /
+                  1                          5                      5
+ **/ 
+ addSplayTrees(&root,&node1);
+ TEST_ASSERT_EQUAL_PTR(&node1,root);
+ TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node5);
+ TEST_ASSERT_EQUAL_NODE(&node5,NULL,&node10);
+ TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node1);
+ /**
+       root            root                    root                      root
+        |    add 20     |   rotate left        |      rotate left         |
+        v    ------>    v   at 10              v      at root             v
+        1               1   ----------->       1      ------------>      20
+         \               \                      \                        /  
+          10             10                     20                      1
+          /              / \                    /                        \
+         5              5  20                  10                        10
+                                              /                         /
+                                             5                         5
+ **/
+ addSplayTrees(&root,&node20);
+ TEST_ASSERT_EQUAL_PTR(&node20,root);
+ TEST_ASSERT_EQUAL_NODE(NULL,NULL,&node5);
+ TEST_ASSERT_EQUAL_NODE(&node5,NULL,&node10);
+ TEST_ASSERT_EQUAL_NODE(NULL,&node10,&node1);
+ TEST_ASSERT_EQUAL_NODE(&node1,NULL,&node20);  
 }
